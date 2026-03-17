@@ -4,6 +4,7 @@
 # Temporary helper scripts generated during development
 scripts/_*.py
 research-skills-prd.md
+SKILL_EXPANSION_PLAN.md
 *.prd.md
 INTERNAL_*.md
 .env
