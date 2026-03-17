@@ -1,0 +1,286 @@
+name: Validate Skills
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'skills/**'
+      - 'scripts/validate_skill.py'
+      - 'SKILL_STANDARD.md'
+  push:
+    branches: [ main ]
+    paths:
+      - 'skills/**'
+  schedule:
+    # Weekly Sunday 02:00 UTC — check external link validity
+    - cron: '0 2 * * 0'
+  workflow_dispatch:
+    inputs:
+      verbose:
+        description: 'Enable verbose logging'
+        required: false
+        default: 'false'
+        type: boolean
+
+jobs:
+  # ============================================================
+  # Job 1: Validate SKILL.md format
+  # ============================================================
+  validate-format:
+    name: Validate SKILL.md Format
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: false   # skip submodules to speed up CI
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Run validation (all SKILL.md files)
+        id: validate
+        run: |
+          python scripts/validate_skill.py skills/ \
+            --verbose \
+            --json-output validation_report.json
+        continue-on-error: true   # allow next step to read the report
+
+      - name: Upload validation report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: validation-report
+          path: validation_report.json
+          retention-days: 30
+
+      - name: Post PR comment with results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let report_data = [];
+            try {
+              report_data = JSON.parse(fs.readFileSync('validation_report.json', 'utf8'));
+            } catch (e) {
+              console.log('Could not read validation_report.json');
+              return;
+            }
+
+            const failed = report_data.filter(r => !r.passed);
+            const passed = report_data.filter(r => r.passed);
+            const total  = report_data.length;
+
+            let body = `## 🔍 Skill Format Validation Results\n\n`;
+            body += `| Metric | Value |\n|:-------|:------|\n`;
+            body += `| Files checked | ${total} |\n`;
+            body += `| ✅ Passed | ${passed.length} |\n`;
+            body += `| ❌ Failed | ${failed.length} |\n\n`;
+
+            if (failed.length > 0) {
+              body += `### ❌ Failed Files\n\n`;
+              for (const r of failed) {
+                body += `**\`${r.file}\`**\n`;
+                for (const err of r.errors) {
+                  body += `- [\`${err.rule}\`] ${err.message}\n`;
+                }
+                body += '\n';
+              }
+              body += `\n> Run \`python scripts/validate_skill.py <file> --verbose\` locally for details.\n`;
+              body += `> See [SKILL_STANDARD.md](SKILL_STANDARD.md) §7 for rule definitions.\n`;
+            } else if (total > 0) {
+              body += `✅ All **${total}** SKILL.md file(s) passed format validation.\n`;
+            } else {
+              body += `ℹ️ No SKILL.md files were modified in this PR.\n`;
+            }
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+
+      - name: Fail if validation errors exist
+        run: |
+          python -c "
+          import json, sys
+          data = json.load(open('validation_report.json'))
+          failed = [r for r in data if not r['passed']]
+          if failed:
+              print(f'Validation failed: {len(failed)} file(s) have errors')
+              for r in failed:
+                  print(f\"  {r['file']}: {len(r['errors'])} error(s)\")
+              sys.exit(1)
+          else:
+              print(f'All {len(data)} file(s) passed validation')
+          "
+
+  # ============================================================
+  # Job 2: Duplicate Skill detection (PR only)
+  # ============================================================
+  check-duplicates:
+    name: Check for Duplicate Skills
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install scikit-learn
+        run: pip install scikit-learn
+
+      - name: Find changed SKILL.md files
+        id: changed
+        run: |
+          CHANGED=$(git diff --name-only origin/main...HEAD | grep 'SKILL.md' || true)
+          echo "changed_files<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Run similarity check
+        if: steps.changed.outputs.changed_files != ''
+        run: |
+          python scripts/validate_skill.py skills/ --json-output /tmp/all_skills.json || true
+          python - << 'PYEOF'
+          import os, sys, re
+          from pathlib import Path
+
+          def read_skill_text(path):
+              try:
+                  content = Path(path).read_text(encoding='utf-8')
+                  fm_match = re.search(r'description:\s*[>|]?\s*\n?((?:  .+\n?)+)', content)
+                  desc = fm_match.group(1).strip() if fm_match else ""
+                  return desc + " " + content[:2000]
+              except Exception:
+                  return ""
+
+          changed_str = """${{ steps.changed.outputs.changed_files }}""".strip()
+          if not changed_str:
+              print("No changed files; skipping duplicate check")
+              sys.exit(0)
+
+          changed_files = [f for f in changed_str.split('\n') if f.strip()]
+          all_skills = list(Path('skills').rglob('SKILL.md'))
+
+          try:
+              from sklearn.feature_extraction.text import TfidfVectorizer
+              from sklearn.metrics.pairwise import cosine_similarity
+              import numpy as np
+
+              all_docs = [(str(p), read_skill_text(p)) for p in all_skills]
+              for changed_file in changed_files:
+                  if not os.path.exists(changed_file):
+                      continue
+                  changed_text = read_skill_text(changed_file)
+                  docs = [d for _, d in all_docs if d]
+                  if not docs:
+                      continue
+                  vectorizer = TfidfVectorizer(analyzer='char_wb', ngram_range=(2, 4))
+                  matrix = vectorizer.fit_transform(docs + [changed_text])
+                  sims = cosine_similarity(matrix[-1:], matrix[:-1])[0]
+                  high = np.where(sims > 0.85)[0]
+                  for idx in high:
+                      sim_file = all_docs[idx][0]
+                      if sim_file != changed_file:
+                          print(f"WARNING: High similarity ({sims[idx]:.2f}) between")
+                          print(f"  {changed_file}")
+                          print(f"  {sim_file}")
+                          print("  Please confirm these Skills are substantively different.")
+          except ImportError:
+              print("scikit-learn not available; skipping similarity check")
+
+          print("Duplicate check complete (non-blocking).")
+          PYEOF
+        continue-on-error: true
+
+  # ============================================================
+  # Job 3: External link check (scheduled / manual only)
+  # ============================================================
+  check-links:
+    name: Check External Links
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install requests
+        run: pip install requests
+
+      - name: Check external links
+        run: |
+          python - << 'PYEOF'
+          import re, sys
+          from pathlib import Path
+          import requests
+          from concurrent.futures import ThreadPoolExecutor, as_completed
+
+          URL_PATTERN = re.compile(r'https?://[^\s\)\]\'"<>]+', re.IGNORECASE)
+
+          SKIP_DOMAINS = {
+              'localhost', '127.0.0.1', 'example.com',
+              'your-org.github.io', 'your-org',
+          }
+
+          def check_url(url):
+              for skip in SKIP_DOMAINS:
+                  if skip in url:
+                      return url, True, "skipped (placeholder)"
+              try:
+                  r = requests.head(url, timeout=10, allow_redirects=True,
+                                    headers={"User-Agent": "awesome-rosetta-skills-linkchecker/1.0"})
+                  if r.status_code < 400:
+                      return url, True, str(r.status_code)
+                  r = requests.get(url, timeout=10, allow_redirects=True,
+                                   headers={"User-Agent": "awesome-rosetta-skills-linkchecker/1.0"},
+                                   stream=True)
+                  r.close()
+                  return url, r.status_code < 400, str(r.status_code)
+              except Exception as e:
+                  return url, False, str(e)[:80]
+
+          all_urls = set()
+          for skill_file in Path('skills').rglob('SKILL.md'):
+              content = skill_file.read_text(encoding='utf-8')
+              all_urls.update(URL_PATTERN.findall(content))
+
+          print(f"Checking {len(all_urls)} external links...")
+
+          broken = []
+          with ThreadPoolExecutor(max_workers=20) as ex:
+              futures = {ex.submit(check_url, u): u for u in all_urls}
+              for f in as_completed(futures):
+                  url, ok, status = f.result()
+                  if not ok:
+                      broken.append((url, status))
+                      print(f"  BROKEN: {url} — {status}")
+
+          if broken:
+              print(f"\n{len(broken)} broken link(s) found — please update SKILL.md files")
+          else:
+              print(f"All {len(all_urls)} link(s) are valid")
+          PYEOF
+        continue-on-error: true   # link failures don't block CI

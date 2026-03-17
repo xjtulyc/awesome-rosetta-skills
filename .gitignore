@@ -1,0 +1,54 @@
+# ========================================
+# Private / internal documents (not for public git)
+# ========================================
+# Temporary helper scripts generated during development
+scripts/_*.py
+research-skills-prd.md
+*.prd.md
+INTERNAL_*.md
+.env
+.env.*
+secrets/
+private/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+.Python
+.venv
+venv/
+env/
+ENV/
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+
+# Node
+node_modules/
+npm-debug.log*
+package-lock.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+Thumbs.db
+
+# Logs & temp
+*.log
+*.tmp
+*.temp
+validation_report*.json
+validation_report*.txt
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
