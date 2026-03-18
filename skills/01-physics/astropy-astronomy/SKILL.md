@@ -144,8 +144,8 @@ No API keys are required for the public Vizier / SIMBAD / SkyView services.
 If you use the ESO archive or proprietary data portals, store credentials as:
 
 ```bash
-export ESO_USERNAME="<paste-your-username>"
-export ESO_PASSWORD="<paste-your-password>"
+export ESO_USERNAME="<your-username>"
+export ESO_PASSWORD=$(cat ~/.eso_passwd)   # read from file, never hardcode
 ```
 
 Access them in Python with:

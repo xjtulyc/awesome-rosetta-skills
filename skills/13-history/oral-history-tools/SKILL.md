@@ -107,7 +107,7 @@ pip install openai-whisper "pyannote.audio>=3.1" "pandas>=1.5" "numpy>=1.23"
 python -c "import whisper; print(whisper.__version__)"
 
 # Set your HuggingFace token as an environment variable (never hardcode it)
-export HF_TOKEN="your_huggingface_token_here"
+export HF_TOKEN="$(cat ~/.hf_token)"   # store token in file, never hardcode
 ```
 
 On Windows:

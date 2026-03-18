@@ -147,8 +147,8 @@ FDSN data centres are open for most uses. If you access restricted data
 (embargoed networks), store credentials securely:
 
 ```bash
-export FDSN_USER="<paste-your-username>"
-export FDSN_PASSWORD="<paste-your-password>"
+export FDSN_USER="<your-username>"
+export FDSN_PASSWORD=$(cat ~/.fdsn_passwd)   # read from file, never hardcode
 ```
 
 Access in Python:

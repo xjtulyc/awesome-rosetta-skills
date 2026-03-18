@@ -103,8 +103,8 @@ credentials:
 copernicusmarine login
 
 # Option 2 – environment variables (CI/CD friendly)
-export COPERNICUSMARINE_USERNAME="<paste-your-username>"
-export COPERNICUSMARINE_PASSWORD="<paste-your-password>"
+export COPERNICUSMARINE_USERNAME="<your-username>"
+export COPERNICUSMARINE_PASSWORD=$(cat ~/.cmems_passwd)   # read from file, never hardcode
 ```
 
 ```python

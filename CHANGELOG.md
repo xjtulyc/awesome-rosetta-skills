@@ -1,5 +1,7 @@
 # Changelog
 
+<!-- markdownlint-configure-file {"MD024": {"siblings_only": true}} -->
+
 All notable changes to this project are documented here.
 
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
@@ -8,6 +10,87 @@ Versioning: [Semantic Versioning](https://semver.org/).
 ---
 
 ## [Unreleased]
+
+---
+
+## [1.0.0] - 2026-03-18
+
+### Added
+
+**169 skills total** — all 169 SKILL.md files pass CI validation (`scripts/validate_skill.py`, 0 failures).
+
+This release completes the full skill expansion plan across 24 domains:
+
+#### Wave 3 — New Skills (this release)
+
+##### 08 Finance Academic
+
+- `financial-time-series` — GARCH, cointegration, pairs trading, Fama-French, VaR/ES
+- `wrds-data-access` — WRDS Python API, Compustat/CRSP, CCM linking
+- `fixed-income` — bond pricing, YTM, duration, Nelson-Siegel, CDS
+
+##### 10 Sociology
+
+- `inequality-analysis` — Gini, Theil, FGT poverty, UQR gender gap, Moran's I
+- `agent-based-social` — Mesa: Schelling, Deffuant opinion dynamics, SIR epidemic
+- `qualitative-digital` — NVivo-style coding, HDBSCAN semantic clustering, kappa IRR
+
+##### 12 Linguistics
+
+- `phonetics-praat` — parselmouth pitch/formant, VOT detection, vowel space
+- `typology-wals` — Greenberg universals, Yule's Q, Moran's I typological signal
+- `historical-linguistics` — Levenshtein cognate detection, UPGMA dendrogram, NW alignment
+- `computational-pragmatics` — zero-shot dialog acts, politeness features, implicature
+
+##### 14 Philosophy
+
+- `ethics-ai-analysis` — fairlearn MetricFrame, Hardt threshold adjustment, fairness-accuracy tradeoff
+
+##### 15 Archaeology
+
+- `archaeological-gis` — KDTree R-statistic, HDBSCAN hotspot, Voronoi, RF predictive model
+- `artifact-analysis` — diversity indices, correspondence analysis, Harris matrix
+- `photogrammetry-3d` — Open3D point cloud, Poisson reconstruction, ICP registration
+
+##### 17 Public Health
+
+- `systematic-review-epi` — DerSimonian-Laird, forest plot, Egger's test, meta-regression
+
+##### 18 Urban Science
+
+- `urban-remote-sensing` — Sentinel-2 NDVI/NDBI/NDWI, RF LULC, UHI analysis
+- `mobility-trajectories` — GPS stop detection, OD matrix, radius of gyration, entropy
+- `regional-economics` — shift-share, LQ, Leontief IO, Krugman index, beta-convergence
+- `housing-market` — hedonic regression, repeat-sales index, affordability, spatial lag model
+
+##### 20 Education
+
+- `learning-experiment` — IRT 2PL/3PL, power law of learning, Ebbinghaus forgetting, BKT, DIF
+
+##### 21 Library Science
+
+- `openalx-bibliometrics` — OpenAlex API, h-index, g-index, Bradford's Law, co-authorship network
+- `knowledge-graph-sparql` — rdflib RDF, SPARQL, Wikidata, OWL reasoning, entity reconciliation
+- `patent-analysis` — IPC landscape, citation network TCT, Bass S-curve, inventor network
+- `research-impact` — FWCI, MNCS, PP-top10%, JIF, altmetrics, Leiden indicators
+
+##### 22 Interdisciplinary
+
+- `science-of-science` — CD disruption index, team size effects, sleeping beauty, knowledge flow
+- `text-mining-science` — LDA/NMF topic modeling, RAKE keywords, scientific NER, trend detection
+- `mixed-methods-research` — content analysis, kappa/alpha IRR, QCA/fsQCA, triangulation
+
+##### 23 Research Workflow
+
+- `python-package-dev` — pyproject.toml src layout, pytest, Sphinx autodoc, PyPI publishing
+- `quarto-reporting` — parameterized reports, multi-format output, journal templates, automation
+- `r-package-dev` — devtools/roxygen2/testthat, S3 classes, rpy2 bridge, CRAN check
+- `containerization-research` — Dockerfile multi-stage, Docker Compose, Singularity HPC, Docker SDK
+- `data-version-control` — DVC pipeline, experiment tracking, remote storage, MLflow integration
+
+### Fixed
+
+- Removed hardcoded credential patterns in 4 SKILL.md files (S001 rule compliance)
 
 ---
 
