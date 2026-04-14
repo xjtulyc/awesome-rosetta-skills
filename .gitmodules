@@ -4,18 +4,18 @@
 
 [submodule "external/orchestra-ai-research"]
 	path = external/orchestra-ai-research
-	url = https://github.com/Orchestra-Research/AI-Research-SKILLs.git
+	url = https://github.com/MedgeAI/AI-Research-SKILLs.git
 	# 85+ AI/ML research skills — covers transformer training, eval, datasets
 	# Update frequency: monthly
 
 [submodule "external/kdense-scientific"]
 	path = external/kdense-scientific
-	url = https://github.com/K-Dense-AI/claude-scientific-skills.git
+	url = https://github.com/MedgeAI/claude-scientific-skills.git
 	# 170+ biomedical and life sciences skills
 	# Update frequency: bi-weekly
 
 [submodule "external/kdense-writer"]
 	path = external/kdense-writer
-	url = https://github.com/K-Dense-AI/claude-scientific-writer.git
+	url = https://github.com/MedgeAI/claude-scientific-writer.git
 	# 20+ scientific writing and manuscript preparation skills
 	# Update frequency: monthly
