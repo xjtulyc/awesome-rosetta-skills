@@ -10,7 +10,7 @@
 
 [submodule "external/kdense-scientific"]
 	path = external/kdense-scientific
-	url = https://github.com/MedgeAI/claude-scientific-skills.git
+	url = https://github.com/MedgeAI/scientific-agent-skills.git
 	# 170+ biomedical and life sciences skills
 	# Update frequency: bi-weekly
 
