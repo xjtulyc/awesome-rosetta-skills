@@ -1,8 +1,6 @@
 ---
 name: data-visualization
-description: >
-  Create publication-quality figures with matplotlib/seaborn (Python) or ggplot2 (R).
-  Covers multi-panel layouts, colorblind-safe palettes, and journal export settings.
+description: "Create publication-quality figures with matplotlib/seaborn (Python) or ggplot2 (R). Covers multi-panel layouts, colorblind-safe palettes, and journal export settings. Use when the user needs publication-ready plots, scientific figures, journal-formatted charts, or mentions matplotlib, seaborn, or ggplot2."
 tags:
   - visualization
   - matplotlib
@@ -132,32 +130,7 @@ def setup_publication_style(
     axes_spines_right: bool = False,
     axes_spines_top: bool = False,
 ) -> None:
-    """
-    Configure matplotlib/seaborn for publication-quality output.
-
-    Parameters
-    ----------
-    font_size : int
-        Base font size in pt. Typical range: 6–10 pt for journals.
-    font_family : str
-        Font family ('sans-serif', 'serif').
-    use_latex : bool
-        Render text with LaTeX (requires a local LaTeX install).
-    style : str
-        Seaborn style: 'whitegrid', 'ticks', 'white', 'dark'.
-    context : str
-        Seaborn context: 'paper', 'notebook', 'talk', 'poster'.
-    color_palette : list, optional
-        List of hex colors. Defaults to Okabe-Ito.
-    line_width : float
-        Default line width for axes and lines.
-    tick_major_size : float
-        Major tick length in pt.
-    axes_spines_right : bool
-        Whether to show right spine.
-    axes_spines_top : bool
-        Whether to show top spine.
-    """
+    """Configure matplotlib/seaborn for publication-quality output."""
     if color_palette is None:
         color_palette = OKABE_ITO
 
@@ -211,19 +184,7 @@ def save_figure(
     formats: Optional[List[str]] = None,
     dpi: int = 300,
 ) -> None:
-    """
-    Save figure to one or more formats.
-
-    Parameters
-    ----------
-    fig : matplotlib Figure
-    path : str
-        Base path without extension (e.g. 'figures/fig1').
-    formats : list, optional
-        Defaults to ['pdf', 'tiff']. Options: 'pdf', 'svg', 'tiff', 'png', 'eps'.
-    dpi : int
-        Resolution for raster formats.
-    """
+    """Save figure to one or more formats (default: pdf + tiff)."""
     if formats is None:
         formats = ["pdf", "tiff"]
     for fmt in formats:
@@ -280,68 +241,7 @@ plt.show()
 
 ---
 
-## Figure 2 — Violin + Strip Plot (Multi-Group Comparison)
-
-```python
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-from pub_style import setup_publication_style, mm_to_inches, save_figure, OKABE_ITO
-
-setup_publication_style(font_size=8)
-
-rng = np.random.default_rng(7)
-data = pd.DataFrame({
-    "value": np.concatenate([
-        rng.normal(5, 1.2, 40),
-        rng.normal(6.5, 1.5, 40),
-        rng.normal(4.2, 0.9, 40),
-        rng.normal(7.0, 2.0, 40),
-    ]),
-    "condition": ["Control"] * 40 + ["Drug A"] * 40 + ["Drug B"] * 40 + ["Combo"] * 40,
-})
-
-fig, ax = plt.subplots(figsize=(mm_to_inches(120), mm_to_inches(80)))
-
-palette = {c: OKABE_ITO[i] for i, c in enumerate(data["condition"].unique())}
-
-# Violin (distribution)
-sns.violinplot(
-    data=data, x="condition", y="value",
-    palette=palette, inner=None, linewidth=0.8,
-    cut=0, ax=ax,
-)
-
-# Strip (individual data points)
-sns.stripplot(
-    data=data, x="condition", y="value",
-    color="black", size=2.5, alpha=0.5, jitter=True,
-    ax=ax, zorder=3,
-)
-
-# Median markers
-for i, (cond, grp) in enumerate(data.groupby("condition")):
-    ax.plot(i, grp["value"].median(), marker="D", color="white",
-            markeredgecolor="black", markeredgewidth=0.8, markersize=5, zorder=4)
-
-ax.set_xlabel("Treatment condition")
-ax.set_ylabel("Response (arbitrary units)")
-ax.set_title("Figure 2: Distribution of responses by condition")
-
-# Significance bracket example
-ax.annotate("", xy=(1, 9.5), xytext=(3, 9.5),
-            arrowprops=dict(arrowstyle="-", color="black", lw=0.8))
-ax.text(2, 9.7, "***", ha="center", va="bottom", fontsize=9)
-
-fig.tight_layout()
-save_figure(fig, "figure2_violin", formats=["pdf", "tiff"])
-plt.show()
-```
-
----
-
-## Figure 3 — Multi-Panel Figure with GridSpec
+## Figure 2 — Multi-Panel Figure with GridSpec
 
 ```python
 import numpy as np
@@ -512,6 +412,20 @@ combined <- plot_grid(p1, p2, ncol = 2, align = "hv", axis = "tblr")
 ggsave("figure_ggplot2.pdf",  combined, width = 183, height = 90, units = "mm", dpi = 300)
 ggsave("figure_ggplot2.tiff", combined, width = 183, height = 90, units = "mm", dpi = 300,
        compression = "lzw")
+```
+
+---
+
+## Post-Save Validation
+
+```bash
+# Verify DPI and dimensions meet journal requirements
+python -c "
+from PIL import Image
+img = Image.open('figure1_scatter.tiff')
+print(f'Size: {img.size}, DPI: {img.info.get(\"dpi\", \"N/A\")}')
+"
+# Check: DPI >= 300, width matches journal spec (e.g. 89mm ≈ 1051px at 300 DPI)
 ```
 
 ---

@@ -1,10 +1,6 @@
 ---
 name: bayesian-stats
-description: >
-  Use this Skill when the user needs to build Bayesian statistical models: prior
-  selection, posterior sampling with MCMC (NUTS), convergence diagnostics, posterior
-  predictive checks, LOO-CV model comparison, hierarchical models, and Bayesian A/B testing.
-  Covers PyMC 5.x and ArviZ.
+description: "Use this Skill when the user needs to build Bayesian statistical models: prior selection, posterior sampling with MCMC (NUTS), convergence diagnostics, posterior predictive checks, LOO-CV model comparison, hierarchical models, and Bayesian A/B testing. Covers PyMC 5.x and ArviZ."
 tags:
   - mathematics
   - bayesian-inference
@@ -42,35 +38,7 @@ last_updated: "2026-03-17"
 
 ---
 
-## 1. Overview
-
-### What Problem Does This Skill Solve?
-
-Bayesian inference provides a principled framework for combining prior knowledge with
-observed data to produce full posterior distributions over parameters — rather than
-single point estimates. This Skill covers the complete modern Bayesian workflow:
-
-1. **Prior selection** — weakly informative vs. informative priors; prior predictive checks
-2. **MCMC sampling** — NUTS sampler with automatic tuning
-3. **Convergence diagnostics** — R-hat ≤ 1.01, effective sample size ≥ 400
-4. **Posterior analysis** — summary statistics, credible intervals, trace plots
-5. **Model comparison** — Leave-One-Out Cross-Validation (LOO-CV) with ArviZ
-6. **Hierarchical models** — partial pooling, non-centered parameterization
-7. **Bayesian A/B testing** — direct probability statements, no p-values needed
-
-### When Bayesian vs. Frequentist?
-
-| Situation | Prefer Bayesian |
-|---|---|
-| Small sample, prior knowledge available | Yes |
-| Need full uncertainty quantification | Yes |
-| Hierarchical / multilevel structure | Yes |
-| Need P(hypothesis | data) directly | Yes |
-| Large n, no prior, fast turnaround needed | Frequentist is fine |
-
----
-
-## 2. Environment Setup
+## 1. Environment Setup
 
 ```bash
 conda create -n bayes python=3.11 -y
@@ -96,9 +64,9 @@ print(az.summary(idata))
 
 ---
 
-## 3. Core Implementation
+## 2. Core Implementation
 
-### 3.1 Prior Selection Helper
+### 2.1 Prior Selection Helper
 
 ```python
 import numpy as np
@@ -153,7 +121,7 @@ def prior_predictive_check(
     return idata
 ```
 
-### 3.2 Linear Regression with Weakly Informative Priors
+### 2.2 Linear Regression with Weakly Informative Priors
 
 ```python
 def build_linear_model(
@@ -195,7 +163,7 @@ def build_linear_model(
     return model
 ```
 
-### 3.3 NUTS Sampling and Diagnostics
+### 2.3 NUTS Sampling and Diagnostics
 
 ```python
 def sample_and_diagnose(
@@ -297,7 +265,7 @@ def plot_diagnostics(
     print(f"Saved diagnostic plots to {output_dir}/")
 ```
 
-### 3.4 LOO-CV Model Comparison
+### 2.4 LOO-CV Model Comparison
 
 ```python
 def compare_models(
@@ -338,7 +306,7 @@ def compare_models(
     return comparison
 ```
 
-### 3.5 Hierarchical Model (Partial Pooling)
+### 2.5 Hierarchical Model (Partial Pooling)
 
 ```python
 def build_hierarchical_model(
@@ -387,7 +355,7 @@ def build_hierarchical_model(
     return hierarchical_model
 ```
 
-### 3.6 Bayesian A/B Testing
+### 2.6 Bayesian A/B Testing
 
 ```python
 def bayesian_ab_test(
@@ -457,7 +425,7 @@ def bayesian_ab_test(
 
 ---
 
-## 4. End-to-End Examples
+## 3. End-to-End Examples
 
 ### Example 1 — Bayesian Linear Regression
 
@@ -557,7 +525,7 @@ comparison = compare_models(
 
 ---
 
-## 5. Common Errors and Troubleshooting
+## 4. Troubleshooting
 
 | Error | Cause | Fix |
 |---|---|---|
@@ -571,7 +539,7 @@ comparison = compare_models(
 
 ---
 
-## 6. Prior Selection Decision Tree
+## 5. Prior Selection Decision Tree
 
 ```
 Is there strong domain knowledge?
@@ -586,22 +554,3 @@ Always run prior_predictive_check() to verify priors produce
 plausible outcome values before fitting.
 ```
 
----
-
-## 7. References and Further Reading
-
-- PyMC documentation: <https://www.pymc.io/welcome.html>
-- ArviZ documentation: <https://python.arviz.org/>
-- Gelman, A. et al. (2013). *Bayesian Data Analysis*, 3rd ed. — standard reference text
-- McElreath, R. (2020). *Statistical Rethinking*, 2nd ed. — accessible introduction
-- Vehtari, A. et al. (2017). "Practical Bayesian model evaluation using LOO-CV and WAIC."
-  *Statistics and Computing*, 27(5), 1413–1432. <https://doi.org/10.1007/s11222-016-9696-4>
-- Stan/PyMC prior recommendations: <https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations>
-
----
-
-## 8. Changelog
-
-| Version | Date | Change |
-|---|---|---|
-| 1.0.0 | 2026-03-17 | Initial release — PyMC 5.x workflow, diagnostics, LOO-CV, hierarchical, A/B test |
