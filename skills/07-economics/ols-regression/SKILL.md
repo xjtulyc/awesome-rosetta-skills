@@ -1,8 +1,6 @@
 ---
 name: ols-regression
-description: >
-  Run OLS regressions with full diagnostics: heteroscedasticity tests, robust/clustered SEs,
-  VIF, structural breaks, and publication-ready tables via statsmodels.
+description: "Run OLS regressions with full diagnostics: heteroscedasticity tests, robust/clustered SEs, VIF, structural breaks, and publication-ready tables via statsmodels. Use when the user asks for OLS regression, linear regression diagnostics, heteroscedasticity testing, or needs publication-ready regression tables in Python."
 tags:
   - econometrics
   - regression
@@ -39,24 +37,15 @@ follows best practices from Angrist & Pischke (2009) and Greene (2018).
 
 ---
 
-## Core Concepts
+## Diagnostic Decision Tree
 
-### Why OLS?
+When diagnostics flag issues, follow this sequence:
 
-Under the Gauss-Markov assumptions (linearity, random sampling, no perfect multicollinearity,
-zero conditional mean, homoscedasticity), OLS is BLUE — Best Linear Unbiased Estimator. In
-practice, homoscedasticity almost never holds for economic cross-sectional data, so **robust
-standard errors** are the default. Consistency requires only that E[u|X] = 0.
-
-### Key Assumptions and What Breaks Them
-
-| Assumption | Violation | Consequence | Fix |
-|---|---|---|---|
-| E[u\|X] = 0 | Omitted variable, endogeneity | Biased, inconsistent β̂ | Controls, IV |
-| No multicollinearity | High VIF | Inflated SE, unstable estimates | Drop/combine vars |
-| Homoscedasticity | Heteroscedasticity | SE wrong, invalid inference | Robust SE |
-| No serial correlation | Time series / clusters | SE wrong | Clustered SE, FGLS |
-| Normality of u | Small samples | t/F tests invalid | Bootstrap |
+- **BP test rejects (heteroscedasticity)** → Switch to HC3 robust SE (default in this skill)
+- **VIF > 10** → Drop or combine correlated variables; re-run
+- **RESET rejects (functional form)** → Add polynomial terms or log transforms
+- **DW < 1.5 (autocorrelation)** → Use clustered SE or Newey-West HAC
+- **Residuals non-normal** → Bootstrap for inference; OLS point estimates remain consistent
 
 ---
 
@@ -719,29 +708,6 @@ print("\nSaved se_comparison.png")
 
 ---
 
-## Coefficient Interpretation Guide
-
-| Specification | Interpretation of β |
-|---|---|
-| y = β₀ + βX + u | One unit ↑ X → β units ↑ y |
-| ln(y) = β₀ + βX + u | One unit ↑ X → 100β% ↑ y |
-| y = β₀ + β ln(X) + u | 1% ↑ X → β/100 units ↑ y |
-| ln(y) = β₀ + β ln(X) + u | 1% ↑ X → β% ↑ y (elasticity) |
-| y = β₀ + βX + γX² + u | ∂y/∂X = β + 2γX (non-linear) |
-| y = β₀ + β D + u (D binary) | Being in group D → β units ↑ y |
-
-### Omitted Variable Bias Formula
-
-If the true model is y = β₀ + β₁X₁ + β₂X₂ + u but you omit X₂:
-
-plim(β̂₁^short) = β₁ + β₂ · δ₁₂
-
-where δ₁₂ = Cov(X₂, X₁) / Var(X₁) is the regression coefficient of X₂ on X₁.
-
-**Direction of bias**: positive if β₂ and Corr(X₁,X₂) have the same sign.
-
----
-
 ## Checklist Before Reporting Results
 
 - [ ] Report N, R², adjusted R², F-statistic
@@ -753,12 +719,3 @@ where δ₁₂ = Cov(X₂, X₁) / Var(X₁) is the regression coefficient of X�
 - [ ] Inspect residual plots for patterns
 - [ ] Note economically meaningful effect sizes, not just p-values
 
----
-
-## References
-
-- Angrist, J. D., & Pischke, J.-S. (2009). *Mostly Harmless Econometrics*. Princeton UP.
-- Greene, W. H. (2018). *Econometric Analysis* (8th ed.). Pearson.
-- White, H. (1980). A heteroskedasticity-consistent covariance matrix estimator. *Econometrica*, 48(4), 817–838.
-- MacKinnon, J. G., & White, H. (1985). Some heteroskedasticity-consistent covariance matrix estimators with improved finite sample properties. *Journal of Econometrics*, 29(3), 305–325.
-- Stock, J. H., & Watson, M. W. (2020). *Introduction to Econometrics* (4th ed.). Pearson.
