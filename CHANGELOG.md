@@ -11,6 +11,10 @@ Versioning: [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- **IdeaHunter** (tools/resources) — AI research tool / startup idea validation / founder tools. IdeaHunter helps solo founders find demand-backed app and micro-SaaS ideas using public signals, buyer pain, market evidence, MVP scope, and monetization paths. ([Website](https://ideahunter.today) | [Methodology](https://ideahunter.today/methodology) | Freemium / subscription)
+
 ---
 
 ## [1.0.0] - 2026-03-18
