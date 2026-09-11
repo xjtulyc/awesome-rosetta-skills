@@ -1,3 +1,5 @@
+
+
 <div align="center">
 
 <img src="assets/logo.png" alt="awesome-rosetta-skills" width="120" />
@@ -47,7 +49,7 @@ The Rosetta Stone was the key that unlocked communication across civilizations. 
 |                         | awesome-rosetta-skills | Orchestra-Research |   K-Dense   |
 | :---------------------- | :--------------------: | :----------------: | :---------: |
 | **Original Skills**     |        **169**         |         85         |     170     |
-| **Ecosystem Total**     |        **440+**        |         85         |     170     |
+| **Ecosystem Total**     |        **510+**        |         85         |     170     |
 | **Disciplines Covered** |         **24**         |     1 (AI/ML)      | 3 (Bio-Med) |
 | **Humanities**          |           ✅            |         ❌          |      ❌      |
 | **Social Sciences**     |           ✅            |         ❌          |      ❌      |
