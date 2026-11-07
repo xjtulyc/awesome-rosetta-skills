@@ -54,6 +54,7 @@ The Rosetta Stone was the key that unlocked communication across civilizations. 
 | **Earth Sciences**      |           ✅            |         ❌          |   Partial   |
 | **Engineering**         |           ✅            |         ❌          |      ❌      |
 | **Platform Support**    |      5 platforms       |    5 platforms     | 3 platforms |
+| [CrakSEO/skills](https://github.com/CrakSEO/skills) | Connect Claude/Cursor/Codex to CrakSEO remote MCP servers for keyword research, SERP, backlinks, rank tracking, site audit, local SEO, AI visibility, Search Console and URL indexing | Claude Code, Cursor, Codex | MIT |
 
 </div>
 
